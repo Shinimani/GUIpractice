@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TryClickMe extends JFrame {
 
@@ -14,9 +16,10 @@ public class TryClickMe extends JFrame {
 
         setTitle("Clicking");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //having this pack() before and after setlocationrelativeto has an effect, try if want to see
+        pack();//packs everything tightly together to just allow the person to see
         setLocationRelativeTo(null);
         setResizable(false);
-        pack();//packs everything tightly together to just allow the person to see
 
     }
 
@@ -29,11 +32,28 @@ public class TryClickMe extends JFrame {
         labelCount = new JLabel();
         labelCount.setPreferredSize(new Dimension(200,30));
         panel.add(labelCount);
+        updateCounter();
 
+
+
+        //you can both create a new inner class for the action listener or you can just implement the actionlistener class inside the code itself.
         buttonCounter = new JButton("Click me");
+        buttonCounter.addActionListener(
+                new ButtonCounterActionListener()
+
+        );
         panel.add(buttonCounter);
 
         buttonReset = new JButton("Reset");
+        buttonReset.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        clicks = 0;
+                        updateCounter();
+                    }
+                }
+        );
         panel.add(buttonReset);
 
 
@@ -41,13 +61,25 @@ public class TryClickMe extends JFrame {
 
     }
 
+    private void updateCounter() {
+        labelCount.setText("Clicked " + clicks + " times.");
+    }
+
     //can simply type new TryClickMe() but this one registers it into GUI thread, which will be talked about later as said in tut
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new TryClickMe();
+                new TryClickMe().setVisible(true);
             }
         });
+    }
+
+    private class ButtonCounterActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            clicks++;
+            updateCounter();
+        }
     }
 }
